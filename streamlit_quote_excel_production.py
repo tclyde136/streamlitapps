@@ -242,62 +242,67 @@ def create_inflation_excel(df, title_text, compound_periods, rate):
 # --- STREAMLIT UI ---
 st.title("Quote Summary Processor")
 
-title_text = st.text_input("Enter a Title (this will be placed in cell A1)", value="")
-file_name = st.text_input("Name the output file", value="")
-
-excel_type = st.radio("Choose Excel Format:", ["Standard", "Inflation-adjusted"])
-
-compound_periods = None
-rate = None
-
-if excel_type == "Inflation-adjusted":
-    compound_periods_input = st.text_input("Compound Periods", value="")
-    rate_input = st.text_input("Annual Rate (e.g. 0.04 for 4%)", value="")
-
-    try:
-        compound_periods = int(compound_periods_input) if compound_periods_input else None
-    except ValueError:
-        st.error("Compound Periods must be a whole number.")
-
-    rate = None
-    if rate_input:
-        if '.' not in rate_input:
-            st.error("Rate must be a decimal (e.g., 0.04 for 4%). Whole numbers are not allowed.")
-        else:
-            try:
-                rate_value = float(rate_input)
-                if 0 < rate_value < 1:
-                    rate = rate_value
-                else:
-                    st.error("Rate must be between 0 and 1 (exclusive).")
-            except ValueError:
-                st.error("Rate must be a valid decimal number (e.g., 0.04 for 4%).")
-
+# Step 1: Upload CSV file
 uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
 
-if uploaded_file and file_name.strip() and title_text.strip():
-    df = process_data(uploaded_file)
-    st.subheader("Data Preview")
-    st.dataframe(df.head())
+# Only show other options if file is uploaded
+if uploaded_file:
+    st.success("File uploaded successfully!")
 
-    if excel_type == "Standard":
-        excel_bytes = create_standard_excel(df, title_text)
-        st.download_button(
-                label="Download Excel File",
-                data=excel_bytes,
-                file_name=f"{file_name}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-    else:
-        if compound_periods is None or rate is None:
-            st.warning("Please provide valid values for Compound Periods and Annual Rate.")
+    # Step 2: Additional inputs appear AFTER file upload
+    title_text = st.text_input("Enter a Title (this will be placed in cell A1)", value="")
+    file_name = st.text_input("Name the output file", value="")
+
+    # Step 3: Excel format option
+    excel_type = st.radio("Choose Excel Format:", ["Standard", "Inflation-adjusted"])
+
+    compound_periods = None
+    rate = None
+
+    # Step 4: If Inflation-adjusted is selected, show extra inputs
+    if excel_type == "Inflation-adjusted":
+        compound_periods_input = st.text_input("Compound Periods", value="")
+        rate_input = st.text_input("Annual Rate (e.g. 0.04 for 4%)", value="")
+
+        try:
+            compound_periods = int(compound_periods_input) if compound_periods_input else None
+        except ValueError:
+            st.error("Compound Periods must be a whole number.")
+
+        if rate_input:
+            if '.' not in rate_input:
+                st.error("Rate must be a decimal (e.g., 0.04 for 4%). Whole numbers are not allowed.")
+            else:
+                try:
+                    rate_value = float(rate_input)
+                    if 0 < rate_value < 1:
+                        rate = rate_value
+                    else:
+                        st.error("Rate must be between 0 and 1 (exclusive).")
+                except ValueError:
+                    st.error("Rate must be a valid decimal number (e.g., 0.04 for 4%).")
+
+    # Step 5: Run processing + download logic if all fields are filled
+    if file_name.strip() and title_text.strip():
+        df = process_data(uploaded_file)
+        st.subheader("Data Preview")
+        st.dataframe(df.head())
+
+        if excel_type == "Standard":
+            excel_bytes = create_standard_excel(df, title_text)
         else:
-            excel_bytes = create_inflation_excel(df, title_text, compound_periods, rate)
+            if compound_periods is None or rate is None:
+                st.warning("Please provide valid values for Compound Periods and Annual Rate.")
+                excel_bytes = None
+            else:
+                excel_bytes = create_inflation_excel(df, title_text, compound_periods, rate)
+
+        if excel_bytes:
             st.download_button(
                 label="Download Excel File",
                 data=excel_bytes,
                 file_name=f"{file_name}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
-elif uploaded_file:
-    st.warning("Please enter both a title and a file name.")
+    else:
+        st.warning("Please enter both a title and a file name.")
