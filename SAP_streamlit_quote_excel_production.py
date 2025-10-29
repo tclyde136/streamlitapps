@@ -5,7 +5,7 @@ import io
 
 # --- DATA CLEANING FUNCTION ---
 def process_data(file):
-    df = pd.read_csv(file)
+    df = pd.read_csv(file, header = None)
     df = df.drop([0,2])
     df = df.drop(df.columns[0], axis=1)
     df = df.reset_index(drop=True)
@@ -333,3 +333,4 @@ if uploaded_file:
     else:
 
         st.warning("Please enter both a title and a file name.")
+
