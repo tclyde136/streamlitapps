@@ -22,8 +22,8 @@ def process_data(file):
     df['Item'] = pd.to_numeric(df['Item'])
     df['Part Number'] = df['Material']
     df['Qty'] = pd.to_numeric(df['OrdQty (I)'].str.replace(',', ''))
-    df['Price'] = pd.to_numeric(df['Net Price'])
-    df['Estimated'] = pd.to_numeric(df['Estimated'])
+    df['Price'] = pd.to_numeric(df['Net Price'].str.replace(',', ''))
+    df['Estimated'] = pd.to_numeric(df['Estimated'].str.replace(',', ''))
     df['Cost'] = pd.to_numeric(df['Estimated']/df['Qty'])
     df['Margin %'] = pd.to_numeric(df['Margin %'])
     df['Margin'] = pd.to_numeric(df['Margin %']/100)
@@ -333,3 +333,4 @@ if uploaded_file:
     else:
 
         st.warning("Please enter both a title and a file name.")
+
