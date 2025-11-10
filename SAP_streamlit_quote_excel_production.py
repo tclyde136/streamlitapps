@@ -21,7 +21,7 @@ def process_data(file):
     df['Revision'] = df['Revision L']
     df['Item'] = pd.to_numeric(df['Item'])
     df['Part Number'] = df['Material']
-    df['Qty'] = pd.to_numeric(df['OrdQty (I)'])
+    df['Qty'] = pd.to_numeric(df['OrdQty (I)'].str.replace(',', ''))
     df['Price'] = pd.to_numeric(df['Net Price'])
     df['Estimated'] = pd.to_numeric(df['Estimated'])
     df['Cost'] = pd.to_numeric(df['Estimated']/df['Qty'])
@@ -331,4 +331,5 @@ if uploaded_file:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
     else:
+
         st.warning("Please enter both a title and a file name.")
