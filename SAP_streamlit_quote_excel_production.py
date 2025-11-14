@@ -13,7 +13,7 @@ def process_data(file):
     df = df[1:]
     df.columns = new_header
     df = df.reset_index(drop=True)
-    df = df[['Sales Doc.','Sold-to','Sold-To Party Name','Material Description','Revision L','Item','Material','OrdQty (I)','Net Price','NV (Item)','Estimated', 'Margin %']]
+    df = df[['Sales Doc.','Sold-to','SP Name','Material Description','Revision L','Item','Material','OrdQty (I)','Net Price','NV (Item)','Estimated', 'Margin %']]
 
     df['Quote'] = pd.to_numeric(df['Sales Doc.'])
     df['Sold-to'] = pd.to_numeric(df['Sold-to'])
@@ -333,4 +333,5 @@ if uploaded_file:
     else:
 
         st.warning("Please enter both a title and a file name.")
+
 
