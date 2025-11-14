@@ -17,7 +17,7 @@ def process_data(file):
 
     df['Quote'] = pd.to_numeric(df['Sales Doc.'])
     df['Sold-to'] = pd.to_numeric(df['Sold-to'])
-    df['Customer'] = df['Sold-To Party Name']
+    df['Customer'] = df['SP Name']
     df['Revision'] = df['Revision L']
     df['Item'] = pd.to_numeric(df['Item'])
     df['Part Number'] = df['Material']
@@ -333,5 +333,6 @@ if uploaded_file:
     else:
 
         st.warning("Please enter both a title and a file name.")
+
 
 
