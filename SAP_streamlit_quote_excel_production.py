@@ -5,14 +5,7 @@ import io
 
 # --- DATA CLEANING FUNCTION ---
 def process_data(file):
-    df = pd.read_csv(file, header = None)
-    df = df.drop([0,2])
-    df = df.drop(df.columns[0], axis=1)
-    df = df.reset_index(drop=True)
-    new_header = df.iloc[0]
-    df = df[1:]
-    df.columns = new_header
-    df = df.reset_index(drop=True)
+    df = pd.read_csv(file)
     df = df.drop(df.columns[[0, 4, 6, 11]], axis=1)
 
     df['Quote'] = pd.to_numeric(df[df.columns[0]])
@@ -21,9 +14,9 @@ def process_data(file):
     df['Material Description'] = df[df.columns[3]]
     df['Item'] = pd.to_numeric(df[df.columns[4]])
     df['Part Number'] = df[df.columns[5]]
-    df['Qty'] = pd.to_numeric(df[df.columns[6]].str.replace(',', ''))
-    df['Price'] = pd.to_numeric(df[df.columns[7]].str.replace(',', ''))
-    df['Estimated'] = pd.to_numeric(df[df.columns[8]].str.replace(',', ''))
+    df['Qty'] = pd.to_numeric(df[df.columns[6]])
+    df['Price'] = pd.to_numeric(df[df.columns[7]])
+    df['Estimated'] = pd.to_numeric(df[df.columns[8]])
     df['Cost'] = pd.to_numeric(df['Estimated']/df['Qty'])
     df['Margin %'] = pd.to_numeric(df[df.columns[9]])
     df['Margin'] = pd.to_numeric(df['Margin %']/100)
