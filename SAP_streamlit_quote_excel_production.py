@@ -29,7 +29,6 @@ def create_standard_excel(df, title_text):
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
     workbook = writer.book
     worksheet = workbook.add_worksheet('pricing')
-    writer.sheets['pricing'] = worksheet
 
     worksheet.hide_gridlines(2)
 
@@ -118,7 +117,6 @@ def create_inflation_excel(df, title_text, compound_periods, rate):
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
     workbook = writer.book
     worksheet = workbook.add_worksheet('pricing')
-    writer.sheets['pricing'] = worksheet
 
     worksheet.hide_gridlines(2)
 
