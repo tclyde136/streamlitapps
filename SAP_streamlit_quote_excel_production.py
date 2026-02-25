@@ -13,19 +13,19 @@ def process_data(file):
     df = df[1:]
     df.columns = new_header
     df = df.reset_index(drop=True)
-    df = df[['Sales Doc.','Sold-to','SP Name','Material Description','Revision L','Item','Material','OrdQty (I)','Net Price','NV (Item)','Estimated', 'Margin %']]
+    df = df.drop(df.columns[[0, 4, 6, 11]], axis=1)
 
-    df['Quote'] = pd.to_numeric(df['Sales Doc.'])
-    df['Sold-to'] = pd.to_numeric(df['Sold-to'])
-    df['Customer'] = df['SP Name']
-    df['Revision'] = df['Revision L']
-    df['Item'] = pd.to_numeric(df['Item'])
-    df['Part Number'] = df['Material']
-    df['Qty'] = pd.to_numeric(df['OrdQty (I)'].str.replace(',', ''))
-    df['Price'] = pd.to_numeric(df['Net Price'].str.replace(',', ''))
-    df['Estimated'] = pd.to_numeric(df['Estimated'].str.replace(',', ''))
+    df['Quote'] = pd.to_numeric(df[df.columns[0]])
+    df['Sold-to'] = pd.to_numeric(df[df.columns[1]])
+    df['Customer'] = df[df.columns[2]]
+    df['Material Description'] = df[df.columns[3]]
+    df['Item'] = pd.to_numeric(df[df.columns[4]])
+    df['Part Number'] = df[df.columns[5]]
+    df['Qty'] = pd.to_numeric(df[df.columns[6]].str.replace(',', ''))
+    df['Price'] = pd.to_numeric(df[df.columns[7]].str.replace(',', ''))
+    df['Estimated'] = pd.to_numeric(df[df.columns[8]].str.replace(',', ''))
     df['Cost'] = pd.to_numeric(df['Estimated']/df['Qty'])
-    df['Margin %'] = pd.to_numeric(df['Margin %'])
+    df['Margin %'] = pd.to_numeric(df[df.columns[9]])
     df['Margin'] = pd.to_numeric(df['Margin %']/100)
     df = df[['Quote','Sold-to','Customer','Material Description','Item','Part Number','Qty','Price','Cost','Margin']]
     return df
@@ -87,16 +87,16 @@ def create_standard_excel(df, title_text):
 
     ext_cost_formula = f'=SUBTOTAL(9, ${chr(64+total_cost + 1)}{start_row + 2}:${chr(64+total_cost + 1)}{start_row + 1 + len(df)})'
     ext_price_formula = f'=SUBTOTAL(9, ${chr(64+total_price + 1)}{start_row + 2}:${chr(64+total_price + 1)}{start_row + 1 + len(df)})'
-    gm_formula = f'=(R2-Q2)/R2'
+    gm_formula = f'=(O2-N2)/O2'
 
-    worksheet.write('Q1', 'Ext Cost', boldfill)
-    worksheet.write_formula('Q2', ext_cost_formula, fill_currency)
+    worksheet.write('N1', 'Ext Cost', boldfill)
+    worksheet.write_formula('N2', ext_cost_formula, fill_currency)
 
-    worksheet.write('R1', 'Ext Price', boldfill)
-    worksheet.write_formula('R2', ext_price_formula, fill_currency)
+    worksheet.write('O1', 'Ext Price', boldfill)
+    worksheet.write_formula('O2', ext_price_formula, fill_currency)
 
-    worksheet.write('S1', 'GM', boldfill)
-    worksheet.write_formula('S2', gm_formula, fill_percent)
+    worksheet.write('P1', 'GM', boldfill)
+    worksheet.write_formula('P2', gm_formula, fill_percent)
 
     # Summary sheet
     summary = workbook.add_worksheet('summary')
@@ -106,14 +106,13 @@ def create_standard_excel(df, title_text):
     summary.write('A1', 'Customer Name', border)
     summary.write('A2', 'Item Types', border)
     summary.write('A3', 'Bid Type: (AdHoc / LTA/ Renewal)', border)
-    summary.write('A4', 'Existing or New business', border)
-    summary.write('A5', 'Total Lines (Individual P/Ns)', border)
-    summary.write('A6', 'Value', border)
-    summary.write('A7', 'Gross Margin', border)
-    summary.write('A8', 'Price Protection', border)
-    summary.write('A9', 'Quote IDs', border)
+    summary.write('A4', 'Total Lines (Individual P/Ns)', border)
+    summary.write('A5', 'Value', border)
+    summary.write('A6', 'Gross Margin', border)
+    summary.write('A7', 'Price Protection', border)
+    summary.write('A8', 'Quote IDs', border)
 
-    for i in range(1, 10):
+    for i in range(1, 9):
         summary.write(f'B{i}', '', boldborderfill if i == 1 else border)
 
     writer.close()
@@ -254,7 +253,7 @@ def create_inflation_excel(df, title_text, compound_periods, rate):
     boldborderfill = workbook.add_format({'bold': True, 'bg_color': '#DDD9C4', 'border': 2})
 
     for i, label in enumerate([
-        'Customer Name', 'Item Types', 'Bid Type: (AdHoc / LTA/ Renewal)', 'Existing or New business',
+        'Customer Name', 'Item Types', 'Bid Type: (AdHoc / LTA/ Renewal)',
         'Total Lines (Individual P/Ns)', 'Value', 'Gross Margin', 'Price Protection', 'Quote IDs'
     ], 1):
         summary.write(f'A{i}', label, border)
@@ -331,8 +330,4 @@ if uploaded_file:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
     else:
-
         st.warning("Please enter both a title and a file name.")
-
-
-
