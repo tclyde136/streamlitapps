@@ -132,7 +132,7 @@ def create_inflation_excel(df, title_text, compound_periods, rate):
     worksheet.write('A1', title_text, boldfill)
     start_row = 3
     start_col = 0
-    df.to_excel(writer, sheet_name='pricing', startrow=start_row, start_col=start_col, index=False)
+    df.to_excel(writer, sheet_name='pricing', startrow=start_row, startcol=start_col, index=False)
 
     # Add formulas for "Future Cost" and "Future Price" in terms of 0 based column numbers
     cost_col = df.columns.get_loc('Cost') + start_col
