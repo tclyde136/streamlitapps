@@ -6,7 +6,9 @@ import io
 # --- DATA CLEANING FUNCTION ---
 def process_data(file):
     df = pd.read_csv(file)
-    df = df.drop(df.columns[[0, 4, 6, 11]], axis=1)
+    mask = df[df.columns[8]].str.lower() == "new part"
+    df.loc[mask, df.columns[8]] = df[df.columns[9]]
+    df = df.drop(df.columns[[0, 4, 6, 9, 12]], axis=1)
 
     df['Quote'] = pd.to_numeric(df[df.columns[0]])
     df['Sold-to'] = pd.to_numeric(df[df.columns[1]])
