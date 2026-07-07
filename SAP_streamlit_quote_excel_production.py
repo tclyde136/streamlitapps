@@ -290,9 +290,9 @@ if uploaded_file:
         rate_input = st.text_input("Annual Rate (e.g. 0.05 for 5%)", value="")
 
         try:
-            compound_periods = int(compound_periods_input) if compound_periods_input else None
+            compound_periods = float(compound_periods_input) if compound_periods_input else None
         except ValueError:
-            st.error("Compound Periods must be a whole number.")
+            st.error("Compound Periods must be a valid number.")
 
         if rate_input:
             if '.' not in rate_input:
